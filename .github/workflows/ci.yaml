@@ -1,9 +1,9 @@
-name: Build
-run-name: Build
+name: Release
+run-name: Release
 on: workflow_dispatch
 jobs:
   create-unity-package:
-    name: Create Unity Package
+    name: Create and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
