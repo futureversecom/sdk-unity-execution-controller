@@ -2,7 +2,7 @@ name: Release
 run-name: Release
 on: workflow_dispatch
 jobs:
-  create-unity-package:
+  create-and-release:
     name: Create and Release
     runs-on: ubuntu-latest
     steps:
