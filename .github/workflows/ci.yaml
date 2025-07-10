@@ -1,0 +1,27 @@
+name: Build
+run-name: Build
+on: workflow_dispatch
+jobs:
+  create-unity-package:
+    name: Create Unity Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Make Output Path
+        run: mkdir Build
+      - name: Find Package Files
+        run: |
+          echo "Assets/Plugins/ExecutionController.meta" >> metalist
+          find "Assets/Plugins/ExecutionController/" -name \*.meta >> metaList
+      - name: Create Unity Package
+        uses: pCYSl5EDgo/create-unitypackage@master
+        with:
+          package-path: Build/ExecutionController.unitypackage
+          include-files: metaList
+      - name: Upload Package
+        uses: actions/upload-artifact@v4
+        with:
+          path: Build
+          name: Execution Controller Package
