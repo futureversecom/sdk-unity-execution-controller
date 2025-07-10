@@ -8,20 +8,42 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Make Output Path
-        run: mkdir Build
-      - name: Find Package Files
+
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.FV_GH_BOT_APP_ID }}
+          private_key: ${{ secrets.FV_GH_BOT_PRIVATE_KEY }}
+
+      - name: Bump version
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          version-file: "Assets/Plugins/ExecutionController/package.json"
+          input-file: "./CHANGELOG.md"
+          github-token: ${{ steps.generate-token.outputs.token }}
+          git-user-name: FVCodePublisher
+          git-user-email: codepublish@futureverse.com
+
+      - name: Find package files
+        if: steps.changelog.outputs.skipped != 'true'
         run: |
           echo "Assets/Plugins/ExecutionController.meta" >> metalist
           find "Assets/Plugins/ExecutionController/" -name \*.meta >> metaList
-      - name: Create Unity Package
+
+      - name: Create Package
+        if: steps.changelog.outputs.skipped != 'true'
         uses: pCYSl5EDgo/create-unitypackage@master
         with:
-          package-path: Build/ExecutionController.unitypackage
+          package-path: ExecutionController.unitypackage
           include-files: metaList
-      - name: Upload Package
-        uses: actions/upload-artifact@v4
+
+      - name: Create GitHub release
+        if: steps.changelog.outputs.skipped != 'true'
+        uses: softprops/action-gh-release@v1
         with:
-          path: Build
-          name: Execution Controller Package
+          tag_name: v${{ steps.changelog.outputs.version }}
+          name: v${{ steps.changelog.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          files: ExecutionController.unitypackage
