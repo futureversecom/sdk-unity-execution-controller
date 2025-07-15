@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ExecutionControllerSettings
   m_EditorClassIdentifier: 
   _useAssetRegisterProfiles: 0
-  _assetProfilesPath: https://dq7a7vxun94d0.cloudfront.net/Genesis/Profiles/1.0
+  _assetProfilesPath: https://fv-ubf-assets-dev.s3.us-west-2.amazonaws.com/Genesis/Profiles/1.0
   _supportedVariants:
   - Default
   _downloaders:

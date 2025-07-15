@@ -40,10 +40,9 @@ namespace Testbed.Simple
 	public class AssetExecutor : MonoBehaviour
 	{
 		[SerializeField] private MonoClient _client;
-		[SerializeField] private string _chainId;
-		[SerializeField] private string _chainName;
 		[SerializeField] private string _collectionId;
 		[SerializeField] private string _tokenId;
+		[SerializeField] private ExecutionController _executionController;
 
 		public void Run()
 		{
@@ -63,31 +62,15 @@ namespace Testbed.Simple
 		private IEnumerator RunRoutine()
 		{
 			Delete();
-
-			var asset = new Asset()
-			{
-				Id = _chainId,
-				CollectionId = _collectionId,
-				TokenId = _tokenId,
-			};
 			
 			IInventoryItem item = null;
-			yield return AssetRegisterInventoryItem.FromAsset(_client, asset, i => item = i);
-			
-			ArtifactProvider.Instance.RegisterCatalog(item.AssetProfile.RenderCatalog);
-
-			var blueprintDefinition = new BlueprintInstanceData(item.AssetProfile.RenderBlueprintResourceId);
-			var blueprints = new List<IBlueprintInstanceData>
+			yield return AssetRegisterInventoryItem.FromData(_client, _collectionId, _tokenId, i => item = i);
+			if (item?.AssetProfile == null)
 			{
-				blueprintDefinition,
-			};
+				yield break;
+			}
 
-			var executionData = new ExecutionData(
-				transform,
-				null,
-				blueprints
-			);
-			yield return UBFExecutor.ExecuteRoutine(executionData, blueprintDefinition.InstanceId);
+			yield return _executionController.RenderItem(item);
 		}
 	}
 }
