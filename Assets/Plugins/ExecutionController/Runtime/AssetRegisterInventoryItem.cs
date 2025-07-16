@@ -139,18 +139,13 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			inventoryAsset.Metadata = new JObject
 			{
 				{
-					"metadata", new JObject
-					{
-						{
-							"properties", asset.Metadata?.Properties ?? ""
-						},
-						{
-							"attributes", asset.Metadata?.Attributes ?? ""
-						},
-						{
-							"rawAttributes", asset.Metadata?.RawAttributes ?? ""
-						},
-					}
+					"properties", asset.Metadata?.Properties ?? ""
+				},
+				{
+					"attributes", asset.Metadata?.Attributes ?? ""
+				},
+				{
+					"rawAttributes", asset.Metadata?.RawAttributes ?? ""
 				},
 			};
 			
@@ -159,6 +154,11 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			{
 				foreach (var link in nftLink.ChildLinks)
 				{
+					if (link.Asset == null)
+					{
+						continue;
+					}
+					
 					var path = link.Path.Split("#")[^1]
 						.Replace("_accessory", "");
 
