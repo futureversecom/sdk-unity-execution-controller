@@ -4,7 +4,7 @@
 
 The **Execution Controller SDK** is a Unity Engine plugin that acts as an orchestration layer for the [UBF Interpreter](https://github.com/futureversecom/sdk-unity-ubf). It integrates tightly with other Futureverse systems—like the Asset Register, Sylo, and FuturePass—to dynamically resolve assets, metadata, and artifacts, and to sequence execution of parsing and rendering blueprints.
 
-> For more information about the Universal Blueprint Framework, its authoring tools, and the full ecosystem, please visit the [UBF Open Standard](https://ubfstandard.com/) and the [Futureverse Developer Documentation](https://docs.futureverse.com/1134b651-6817-4acb-ab1a-7bced4b15e80).
+> For more information about the Universal Blueprint Framework, its authoring tools, and the full ecosystem, please visit the [UBF Open Standard](https://ubfstandard.com/) and the [Futureverse Developer Documentation](https://docs.futureverse.com/build-an-asset/asset-creation).
 
 ---
 
