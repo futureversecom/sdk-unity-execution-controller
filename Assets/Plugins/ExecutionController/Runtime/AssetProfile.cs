@@ -142,7 +142,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			return variant.GetValueOrDefault(version);
 		}
 
-		private static IEnumerator FromProfileData(AssetProfileData profileData, Action<AssetProfile> onComplete)
+		public static IEnumerator FromProfileData(AssetProfileData profileData, Action<AssetProfile> onComplete)
 		{
 			var profile = new AssetProfile
 			{
