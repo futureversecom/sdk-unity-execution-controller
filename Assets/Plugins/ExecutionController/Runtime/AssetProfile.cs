@@ -16,13 +16,13 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 	public class AssetProfileData
 	{
 		[JsonProperty(PropertyName = "render-instance")]
-		public readonly string RenderBlueprintId;
+		public string RenderBlueprintId;
 		[JsonProperty(PropertyName = "render-catalog")]
-		public readonly string RenderCatalogUri;
+		public string RenderCatalogUri;
 		[JsonProperty(PropertyName = "parsing-instance")]
-		public readonly string ParsingBlueprintId;
+		public string ParsingBlueprintId;
 		[JsonProperty(PropertyName = "parsing-catalog")]
-		public readonly string ParsingCatalogUri;
+		public string ParsingCatalogUri;
 	}
 
 	[JsonObject]
