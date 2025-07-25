@@ -25,7 +25,7 @@ public class AssetTreeInventoryItem : IInventoryItem
 
     public IEnumerator Prepare()
     {
-        Metadata = string.IsNullOrEmpty(_metadata) ? new JObject() : new JObject(_metadata);
+        Metadata = string.IsNullOrEmpty(_metadata) ? new JObject() : JObject.Parse(_metadata);
         
         Children = new Dictionary<string, IInventoryItem>();
         foreach (var child in _children)
