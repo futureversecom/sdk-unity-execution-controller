@@ -7,7 +7,7 @@
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       },
-      "hash": "e870a96bd01a678d5c347d79e44caf85da4ec9ae"
+      "hash": "5c74a60792dbf401b660f8ffc9ba811a6d4ed42b"
     },
     "com.futureverse.sdk-unity-futurepass": {
       "version": "https://github.com/futureversecom/sdk-unity-futurepass.git",
@@ -34,7 +34,7 @@
         "com.unity.shadergraph": "14.0.10",
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       },
-      "hash": "75a47788139d8a615541402e943c35077a4796a5"
+      "hash": "0f14acdc38774f906fcfc45234ce45458e6816b8"
     },
     "com.unity.burst": {
       "version": "1.8.12",
