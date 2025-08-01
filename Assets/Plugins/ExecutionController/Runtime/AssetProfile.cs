@@ -43,7 +43,6 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 
 		public static IEnumerator FetchByUri(	
 			string uri,
-			string fullId,
 			Action<AssetProfile> onComplete,
 			string[] variantsOverride = null)
 		{
@@ -53,7 +52,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			yield return resourceHandler.Get(data => profile = data);
 			if (profile == null)
 			{
-				Debug.LogError($"No asset profile found for {fullId}");
+				Debug.LogError($"No asset profile found at {uri}");
 				onComplete?.Invoke(null);
 				yield break;
 			}
@@ -61,54 +60,13 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			var profileData = GetProfileData(profile, variantsOverride);
 			if (profileData == null)
 			{
-				Debug.LogError($"No asset profile with supported variant and version found for {fullId}.");
+				Debug.LogError($"No asset profile with supported variant and version found at {uri}.");
 				yield break;
 			}
 
 			yield return FromProfileData(profileData, onComplete);
 		}
 		
-		// This will be removed next release once all profiles are uploaded to AR and confirmed working
-		public static IEnumerator FetchByUriLegacy(
-			string uri,
-			string tokenId,
-			Action<AssetProfile> onComplete,
-			string[] variantsOverride = null)
-		{
-			var resourceHandler = new JsonResourceLoader<Dictionary<string, AssetProfileJson>>(uri);
-
-			Dictionary<string, AssetProfileJson> profileCollectionData = null;
-			yield return resourceHandler.Get(data => profileCollectionData = data);
-			if (profileCollectionData == null)
-			{
-				Debug.LogError($"No asset profile collection found at url {uri}");
-				onComplete?.Invoke(null);
-				yield break;
-			}
-
-			// Need to check if override profile exists
-			if (!profileCollectionData.TryGetValue("override", out var profile))
-			{
-				profile = profileCollectionData[tokenId];
-			}
-
-			if (profile == null)
-			{
-				Debug.LogError($"No asset profile found with asset name {tokenId}, and no override profile provided");
-				onComplete?.Invoke(null);
-				yield break;
-			}
-
-			var profileData = GetProfileData(profile, variantsOverride);
-			if (profileData == null)
-			{
-				Debug.LogError($"No asset profile with supported variant and version found for {tokenId}.");
-				yield break;
-			}
-
-			yield return FromProfileData(profileData, onComplete);
-		}
-
 		private static AssetProfileData GetProfileData(AssetProfileJson profile, string[] variantsOverride = null)
 		{
 			var supportedVariants = variantsOverride ??
