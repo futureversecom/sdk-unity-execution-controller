@@ -8,7 +8,6 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 	public interface IInventoryItem
 	{
 		string Id { get; }
-		string Name { get; }
 		AssetProfile AssetProfile { get; }
 		JObject Metadata { get; }
 		Dictionary<string, IInventoryItem> Children { get; }

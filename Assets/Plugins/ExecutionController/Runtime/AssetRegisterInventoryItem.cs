@@ -17,7 +17,6 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 	public class AssetRegisterInventoryItem : IInventoryItem
 	{
 		public string Id { get; private set; }
-		public string Name => $"{_collectionId}:{_tokenId}";
 		public AssetProfile AssetProfile { get; private set; }
 		public JObject Metadata { get; private set; }
 		public Dictionary<string, IInventoryItem> Children { get; private set; }
@@ -31,9 +30,6 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 
 		private static readonly Dictionary<string, AssetRegisterInventoryItem> s_cachedInventoryItems = new();
 		private static string s_assetProfileKey;
-		
-		private string _collectionId;
-		private string _tokenId;
 
 		public static IEnumerator FromData(
 			IClient client,
@@ -88,18 +84,17 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 				callback?.Invoke(inventoryAsset);
 				yield break;
 			}
-			
-			inventoryAsset = new AssetRegisterInventoryItem();
-			
-			if (asset.Id == null)
+
+			if (asset.TokenId == null || asset.CollectionId == null)
 			{
-				Debug.LogError("Asset is missing field 'Id'. You must include this in the Asset Register query.");
+				Debug.LogError("Asset is missing TokenID and/or CollectionID. You must include these in the Asset Register query");
 				yield break;
 			}
-			inventoryAsset.Id = asset.Id;
 			
-			inventoryAsset._collectionId = asset.CollectionId;
-			inventoryAsset._tokenId = asset.TokenId;
+			inventoryAsset = new AssetRegisterInventoryItem
+			{
+				Id = $"{asset.CollectionId}:{asset.TokenId}",
+			};
 
 			yield return RetrieveMissingData(
 				client,
