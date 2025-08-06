@@ -21,8 +21,17 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 		public AssetProfile AssetProfile { get; private set; }
 		public JObject Metadata { get; private set; }
 		public Dictionary<string, IInventoryItem> Children { get; private set; }
-		
+
+		public static string AssetProfileKey
+			=> s_assetProfileKey ??= ExecutionControllerSettings.GetOrCreateSettings()
+					.ProfilesEnvironment ==
+				ExecutionControllerSettings.Environment.Production ?
+					"default" :
+					"staging";
+
 		private static readonly Dictionary<string, AssetRegisterInventoryItem> s_cachedInventoryItems = new();
+		private static string s_assetProfileKey;
+		
 		private string _collectionId;
 		private string _tokenId;
 
@@ -36,7 +45,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			yield return AR.NewQueryBuilder()
 				.AddAssetQuery(collectionId, tokenId)
 					.WithField(n => n.Id)
-					.OnMethod(n => n.profiles(GetAssetProfilesKey()))
+					.OnMethod(n => n.profiles(AssetProfileKey))
 						.Done()
 					.OnMember(n => n.Metadata)
 						.WithField(m => m.Properties)
@@ -92,11 +101,9 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			inventoryAsset._collectionId = asset.CollectionId;
 			inventoryAsset._tokenId = asset.TokenId;
 
-			var key = GetAssetProfilesKey();
 			yield return RetrieveMissingData(
 				client,
 				asset,
-				key,
 				(metadata, profiles, link) =>
 				{
 					asset.Metadata ??= metadata;
@@ -105,8 +112,9 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 				}
 			);
 			
-			if (asset.Profiles == null || !asset.Profiles.TryGetValue(key, out var profile))
+			if (asset.Profiles == null || !asset.Profiles.TryGetValue(AssetProfileKey, out var profile))
 			{
+				Debug.LogError("No asset profile found for asset");
 				yield break;
 			}
 			
@@ -163,7 +171,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			callback?.Invoke(inventoryAsset);
 		}
 		
-		private static IEnumerator RetrieveMissingData(IClient client, Asset asset, string profilesKey, Action<Metadata, JObject, AssetLink> callback)
+		private static IEnumerator RetrieveMissingData(IClient client, Asset asset, Action<Metadata, JObject, AssetLink> callback)
 		{
 			IMemberSubBuilder<IQueryBuilder, Asset> queryBuilder = null;
 			
@@ -171,7 +179,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			{
 				queryBuilder = AR.NewQueryBuilder()
 					.AddAssetQuery(asset.CollectionId, asset.TokenId)
-						.OnMethod(a => a.profiles(profilesKey))
+						.OnMethod(a => a.profiles(AssetProfileKey))
 					.Done();
 			}
 			
@@ -229,14 +237,6 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			}
 			
 			callback?.Invoke(result.Asset.Metadata, result.Asset.Profiles, result.Asset.Links);
-		}
-
-		private static string GetAssetProfilesKey()
-		{
-			var settings = ExecutionControllerSettings.GetOrCreateSettings();
-			return settings.ProfilesEnvironment == ExecutionControllerSettings.Environment.Production ?
-				"default" :
-				"staging";
 		}
 	}
 }
