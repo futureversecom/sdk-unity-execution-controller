@@ -23,6 +23,8 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 		public string ParsingBlueprintId;
 		[JsonProperty(PropertyName = "parsing-catalog")]
 		public string ParsingCatalogUri;
+		[JsonProperty(PropertyName = "standard-version")]
+		public string StandardVersion;
 	}
 
 	[JsonObject]
@@ -87,8 +89,20 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			{
 				return null;
 			}
-			
-			var validVersions = variant.Keys.Select(Version.Parse)
+
+			var validVersions = variant.Keys.Select(
+					k =>
+					{
+						try
+						{
+							return Version.Parse(variant[k].StandardVersion);
+						}
+						catch (Exception)
+						{
+							return null;
+						}
+					}
+				)
 				.Where(v => v != null && v.IsSupported())
 				.ToList();
 			
