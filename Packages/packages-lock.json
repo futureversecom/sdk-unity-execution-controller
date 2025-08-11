@@ -7,7 +7,7 @@
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       },
-      "hash": "5c74a60792dbf401b660f8ffc9ba811a6d4ed42b"
+      "hash": "0da12401ef5776cb69b8e794db606a3a5a7f6352"
     },
     "com.futureverse.sdk-unity-futurepass": {
       "version": "https://github.com/futureversecom/sdk-unity-futurepass.git",

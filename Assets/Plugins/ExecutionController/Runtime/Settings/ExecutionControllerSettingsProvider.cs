@@ -50,12 +50,7 @@ namespace Futureverse.UBF.ExecutionController.Runtime.Settings
 		{
 			EditorGUI.BeginChangeCheck();
 			s_serializedSettings ??= ExecutionControllerSettings.GetSerializedSettings();
-			var useARProfilesProperty = s_serializedSettings.FindProperty("_useAssetRegisterProfiles");
-			EditorGUILayout.PropertyField(useARProfilesProperty);
-			if (!useARProfilesProperty.boolValue)
-			{
-				EditorGUILayout.PropertyField(s_serializedSettings.FindProperty("_assetProfilesPath"));
-			}
+			EditorGUILayout.PropertyField(s_serializedSettings.FindProperty("_profilesEnvironment"));
 			EditorGUILayout.PropertyField(s_serializedSettings.FindProperty("_syloResolverUri"));
 			
 			var caching = s_serializedSettings.FindProperty("_cacheType");

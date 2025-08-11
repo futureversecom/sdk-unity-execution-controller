@@ -17,14 +17,19 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 	public class AssetRegisterInventoryItem : IInventoryItem
 	{
 		public string Id { get; private set; }
-		public string Name => $"{_collectionId}:{_tokenId}";
 		public AssetProfile AssetProfile { get; private set; }
 		public JObject Metadata { get; private set; }
 		public Dictionary<string, IInventoryItem> Children { get; private set; }
-		
+
+		public static string AssetProfileKey
+			=> s_assetProfileKey ??= ExecutionControllerSettings.GetOrCreateSettings()
+					.ProfilesEnvironment ==
+				ExecutionControllerSettings.Environment.Production ?
+					"default" :
+					"staging";
+
 		private static readonly Dictionary<string, AssetRegisterInventoryItem> s_cachedInventoryItems = new();
-		private string _collectionId;
-		private string _tokenId;
+		private static string s_assetProfileKey;
 
 		public static IEnumerator FromData(
 			IClient client,
@@ -36,7 +41,8 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			yield return AR.NewQueryBuilder()
 				.AddAssetQuery(collectionId, tokenId)
 					.WithField(n => n.Id)
-					.WithField(n => n.Profiles)
+					.OnMethod(n => n.profiles(AssetProfileKey))
+						.Done()
 					.OnMember(n => n.Metadata)
 						.WithField(m => m.Properties)
 						.WithField(m => m.Attributes)
@@ -78,18 +84,17 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 				callback?.Invoke(inventoryAsset);
 				yield break;
 			}
-			
-			inventoryAsset = new AssetRegisterInventoryItem();
-			
-			if (asset.Id == null)
+
+			if (asset.TokenId == null || asset.CollectionId == null)
 			{
-				Debug.LogError("Asset is missing field 'Id'. You must include this in the Asset Register query.");
+				Debug.LogError("Asset is missing TokenID and/or CollectionID. You must include these in the Asset Register query");
 				yield break;
 			}
-			inventoryAsset.Id = asset.Id;
 			
-			inventoryAsset._collectionId = asset.CollectionId;
-			inventoryAsset._tokenId = asset.TokenId;
+			inventoryAsset = new AssetRegisterInventoryItem
+			{
+				Id = $"{asset.CollectionId}:{asset.TokenId}",
+			};
 
 			yield return RetrieveMissingData(
 				client,
@@ -102,28 +107,17 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 				}
 			);
 			
-			var settings = ExecutionControllerSettings.GetOrCreateSettings();
-			if (settings.UseAssetRegisterProfiles)
+			if (asset.Profiles == null || !asset.Profiles.TryGetValue(AssetProfileKey, out var profile))
 			{
-				if (asset.Profiles != null && asset.Profiles.TryGetValue("asset-profile", out var profile))
-				{
-					yield return AssetProfile.FetchByUri(
-						profile.ToString(),
-						inventoryAsset.Name,
-						p => inventoryAsset.AssetProfile = p
-					);
-				}
+				Debug.LogError("No asset profile found for asset");
+				yield break;
 			}
-			else
-			{
-				var collectionLocation = asset.CollectionId.Split(":")[^1];
-				var assetProfileUrl = $"{settings.AssetProfilesPath}/{collectionLocation}.json";
-				yield return AssetProfile.FetchByUriLegacy(
-					assetProfileUrl,
-					asset.TokenId,
-					p => inventoryAsset.AssetProfile = p
-				);
-			}
+			
+			yield return AssetProfile.FetchByUri(
+				profile.ToString(),
+				p => inventoryAsset.AssetProfile = p
+			);
+
 			
 			inventoryAsset.Metadata = new JObject
 			{
@@ -180,7 +174,8 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 			{
 				queryBuilder = AR.NewQueryBuilder()
 					.AddAssetQuery(asset.CollectionId, asset.TokenId)
-						.WithField(a => a.Profiles);
+						.OnMethod(a => a.profiles(AssetProfileKey))
+					.Done();
 			}
 			
 			if (asset.Links == null)

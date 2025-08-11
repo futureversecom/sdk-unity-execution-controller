@@ -18,7 +18,6 @@ public class AssetTreeInventoryItem : IInventoryItem
     [SerializeField] private List<AssetTreeInventoryItem> _children;
     
     public string Id => _id;
-    public string Name => _id;
     public AssetProfile AssetProfile { get; private set; }
     public JObject Metadata { get; private set; }
     public Dictionary<string, IInventoryItem> Children { get; private set; }

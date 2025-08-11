@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef19ef67658843958b5603e1b6a302b6, type: 3}
   m_Name: ExecutionControllerSettings
   m_EditorClassIdentifier: 
-  _useAssetRegisterProfiles: 0
-  _assetProfilesPath: https://fv-ubf-assets-dev.s3.us-west-2.amazonaws.com/Genesis/Profiles/1.0
+  _environment: 1
   _supportedVariants:
   - Default
   _downloaders:
