@@ -72,46 +72,35 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 		private static AssetProfileData GetProfileData(AssetProfileJson profile, string[] variantsOverride = null)
 		{
 			var supportedVariants = variantsOverride ??
-				ExecutionControllerSettings.GetOrCreateSettings()
-					.SupportedVariants;
+				ExecutionControllerSettings.GetOrCreateSettings().SupportedVariants;
 
-			Dictionary<string, AssetProfileData> variant = null;
-			foreach (var v in supportedVariants)
-			{
-				if (profile.Variants.TryGetValue(v, out var variantData))
-				{
-					variant = variantData;
-					break;
-				}
-			}
+			var variant = supportedVariants
+				.Select(v => profile.Variants.GetValueOrDefault(v))
+				.FirstOrDefault(dict => dict != null);
 
 			if (variant == null)
 			{
 				return null;
 			}
 
-			var validVersions = variant.Keys.Select(
-					k =>
-					{
-						try
-						{
-							return Version.Parse(variant[k].StandardVersion);
-						}
-						catch (Exception)
-						{
-							return null;
-						}
-					}
-				)
-				.Where(v => v != null && v.IsSupported())
-				.ToList();
-			
-			validVersions.Sort((a, b) => b.CompareTo(a));
-			var version = validVersions.FirstOrDefault()
-					?.ToString() ??
-				"";
+			Version highestVersion = null;
+			AssetProfileData highestProfile = null;
 
-			return variant.GetValueOrDefault(version);
+			foreach (var kvp in variant)
+			{
+				if (Version.TryParse(kvp.Key, out var collectionVersion) &&
+					Version.TryParse(kvp.Value.StandardVersion, out var standardVersion) &&
+					standardVersion.IsSupported())
+				{
+					if (highestVersion == null || collectionVersion.CompareTo(highestVersion) > 0)
+					{
+						highestVersion = collectionVersion;
+						highestProfile = kvp.Value;
+					}
+				}
+			}
+
+			return highestProfile;
 		}
 
 		public static IEnumerator FromProfileData(AssetProfileData profileData, Action<AssetProfile> onComplete)
