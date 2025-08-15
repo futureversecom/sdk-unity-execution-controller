@@ -50,8 +50,9 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 		/// Loads and executes the UBF blueprints for a given inventory item.
 		/// </summary>
 		/// <param name="item">The inventory item to render</param>
+		/// <param name="onComplete">Callback containing the result of the execution.</param>
 		/// <returns></returns>
-		public IEnumerator RenderItem(IInventoryItem item)
+		public IEnumerator RenderItem(IInventoryItem item, Action<ExecutionResult> onComplete = null)
 		{
 			var blueprints = new List<IBlueprintInstanceData>();
 
@@ -68,7 +69,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 				yield break;
 			}
 			
-			yield return _ubfController.Execute(rootId, blueprints);
+			yield return _ubfController.Execute(rootId, blueprints, onComplete);
 		}
 		
 		private IEnumerator PrepareAssetRecursive(
