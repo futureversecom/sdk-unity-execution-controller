@@ -9,15 +9,21 @@ using System.Collections.Generic;
 using Futureverse.UBF.Runtime.Resources;
 using Futureverse.UBF.UBFExecutionController.Runtime;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Futureverse.UBF.ExecutionController.Runtime.Settings
 {
 	internal class ExecutionControllerSettings : ScriptableObject
 	{
+		internal enum Environment
+		{
+			Staging,
+			Production,
+		}
+		
 		private const string MyCustomSettingsPath = "Assets/Resources/RuntimeSettings/ExecutionControllerSettings.asset";
 
-		[SerializeField] private bool _useAssetRegisterProfiles;
-		[SerializeField] private string _assetProfilesPath;
+		[SerializeField] private Environment _profilesEnvironment = Environment.Production;
 		[SerializeField] [Tooltip("List of Variants that can be loaded, in order of load preference")]
 		private string[] _supportedVariants;
 		[SerializeReference] private List<IDownloader> _downloaders;
@@ -25,10 +31,9 @@ namespace Futureverse.UBF.ExecutionController.Runtime.Settings
 		[SerializeField, Tooltip("If blank, uses Application.temporaryCachePath by default")] 
 		private string _cachePathOverride;
 		[SerializeField] private string _syloResolverUri;
-			
-		public string AssetProfilesPath => _assetProfilesPath;
+
+		public Environment ProfilesEnvironment => _profilesEnvironment;
 		public string[] SupportedVariants => _supportedVariants;
-		public bool UseAssetRegisterProfiles => _useAssetRegisterProfiles;
 		public List<IDownloader> Downloaders => _downloaders;
 		public CacheType CacheType => _cacheType;
 		public string CachePathOverride => _cachePathOverride;

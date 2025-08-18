@@ -79,7 +79,7 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 		{
 			if (item.AssetProfile == null)
 			{
-				Debug.LogWarning($"Item {item.Name} does not have an Asset Profile, skipping...");
+				Debug.LogWarning($"Item {item.Id} does not have an Asset Profile, skipping...");
 				yield break;
 			}
 			
