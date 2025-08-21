@@ -19,6 +19,7 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v5
         with:
+          preset: "conventionalcommits"
           version-file: "Assets/Plugins/ExecutionController/package.json"
           input-file: "./CHANGELOG.md"
           github-token: ${{ secrets.GITHUB_TOKEN }}
