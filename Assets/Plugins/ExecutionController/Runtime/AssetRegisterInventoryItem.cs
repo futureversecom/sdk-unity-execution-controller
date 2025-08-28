@@ -141,9 +141,6 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 					{
 						continue;
 					}
-					
-					var path = link.Path.Split("#")[^1]
-						.Replace("_accessory", "");
 
 					if (!s_cachedInventoryItems.TryGetValue(link.Asset.Id, out var child))
 					{
@@ -155,10 +152,13 @@ namespace Futureverse.UBF.UBFExecutionController.Runtime
 						);
 					}
 
-					if (child != null)
+					if (child == null)
 					{
-						inventoryAsset.Children.Add(path, child);
+						continue;
 					}
+
+					var path = link.Path.Split("#")[^1];
+					inventoryAsset.Children.Add(path, child);
 				}
 			}
 
